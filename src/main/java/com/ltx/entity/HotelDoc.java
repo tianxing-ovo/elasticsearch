@@ -3,6 +3,7 @@ package com.ltx.entity;
 import com.ltx.constant.HotelConstant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -15,6 +16,7 @@ import org.springframework.data.elasticsearch.annotations.GeoPointField;
 @Document(indexName = HotelConstant.INDEX_NAME)
 @Data
 @NoArgsConstructor
+@Accessors(chain = true)
 public class HotelDoc {
     @Field(type = FieldType.Keyword)
     private Long id;

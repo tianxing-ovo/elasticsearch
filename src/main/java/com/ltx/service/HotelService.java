@@ -5,6 +5,7 @@ import com.ltx.entity.Hotel;
 import com.ltx.entity.HotelDoc;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface HotelService extends IService<Hotel> {
@@ -14,5 +15,11 @@ public interface HotelService extends IService<Hotel> {
     void insertDocument(Long id);
 
     List<HotelDoc> findAll();
+
+    HotelDoc findById(Long id);
+
+    void update(Long id, Map<String, Object> fieldMap);
+
+    void delete(Long id);
 
 }
