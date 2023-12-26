@@ -40,6 +40,8 @@ public class HotelDoc {
     private String location;
     @Field(type = FieldType.Keyword, index = false)
     private String pic;
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
+    private String all;
 
     public HotelDoc(Hotel hotel) {
         BeanUtils.copyProperties(hotel, this, "latitude", "longitude");

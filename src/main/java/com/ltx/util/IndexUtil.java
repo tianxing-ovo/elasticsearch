@@ -18,6 +18,10 @@ public class IndexUtil {
      * 创建索引
      */
     public void createIndex(Class<?> clazz) {
+        if (exists(clazz)) {
+            System.out.println("索引已存在");
+            return;
+        }
         if (elasticsearchOperations.indexOps(clazz).createWithMapping()) {
             System.out.println("创建索引成功");
         }
