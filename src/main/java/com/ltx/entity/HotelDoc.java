@@ -43,6 +43,10 @@ public class HotelDoc {
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String all;
 
+    private Object distance;
+    // 是否投了广告
+    private Boolean isAD;
+
     public HotelDoc(Hotel hotel) {
         BeanUtils.copyProperties(hotel, this, "latitude", "longitude");
         this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
