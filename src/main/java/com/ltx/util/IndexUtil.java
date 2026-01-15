@@ -7,7 +7,10 @@ import javax.annotation.Resource;
 
 /**
  * 索引工具类
+ *
+ * @author tianxing
  */
+@SuppressWarnings("unused")
 @Component
 public class IndexUtil {
 
@@ -16,6 +19,8 @@ public class IndexUtil {
 
     /**
      * 创建索引
+     *
+     * @param clazz 索引类
      */
     public void createIndex(Class<?> clazz) {
         if (exists(clazz)) {
@@ -29,6 +34,8 @@ public class IndexUtil {
 
     /**
      * 删除索引
+     *
+     * @param clazz 索引类
      */
     public void deleteIndex(Class<?> clazz) {
         if (elasticsearchOperations.indexOps(clazz).delete()) {
@@ -38,6 +45,9 @@ public class IndexUtil {
 
     /**
      * 判断索引是否存在
+     *
+     * @param clazz 索引类
+     * @return 是否存在
      */
     public boolean exists(Class<?> clazz) {
         return elasticsearchOperations.indexOps(clazz).exists();
@@ -45,6 +55,8 @@ public class IndexUtil {
 
     /**
      * 查询索引
+     *
+     * @param clazz 索引类
      */
     public void queryIndex(Class<?> clazz) {
         System.out.println(elasticsearchOperations.indexOps(clazz).getMapping());

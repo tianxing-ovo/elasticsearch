@@ -2,6 +2,11 @@ package com.ltx.entity;
 
 import lombok.Data;
 
+/**
+ * 搜索请求体
+ *
+ * @author tianxing
+ */
 @Data
 public class SearchRequestBody {
     private String key;

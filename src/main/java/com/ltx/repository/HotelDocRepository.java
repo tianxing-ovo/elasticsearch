@@ -5,6 +5,8 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 
 /**
  * 操作hotel索引
+ *
+ * @author tianxing
  */
 public interface HotelDocRepository extends ElasticsearchRepository<HotelDoc, Long> {
 }

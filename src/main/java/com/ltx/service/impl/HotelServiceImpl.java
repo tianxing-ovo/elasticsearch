@@ -35,6 +35,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
+/**
+ * @author tianxing
+ */
 @Service
 public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements HotelService {
 
@@ -42,7 +45,10 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     private DocumentUtil documentUtil;
 
     /**
-     * 搜索
+     * 搜索酒店
+     *
+     * @param searchRequestBody 搜索请求体
+     * @return 分页结果
      */
     @Override
     public PageResult search(SearchRequestBody searchRequestBody) {
@@ -55,21 +61,17 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         }
         // 投放了广告的酒店排前面
         QueryBuilder filter = QueryBuilders.termQuery("isAD", true);
-        NativeSearchQueryBuilder nativeSearchQueryBuilder = documentUtil.buildQuery(QueryBuilders.functionScoreQuery(boolQueryBuilder, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
-                new FunctionScoreQueryBuilder.FilterFunctionBuilder(filter, ScoreFunctionBuilders.weightFactorFunction(1000))}).boostMode(CombineFunction.MULTIPLY), searchRequestBody.getPage() - 1, searchRequestBody.getSize(), sortBy, null);
+        NativeSearchQueryBuilder nativeSearchQueryBuilder = documentUtil.buildQuery(QueryBuilders.functionScoreQuery(boolQueryBuilder, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{new FunctionScoreQueryBuilder.FilterFunctionBuilder(filter, ScoreFunctionBuilders.weightFactorFunction(1000))}).boostMode(CombineFunction.MULTIPLY), searchRequestBody.getPage() - 1, searchRequestBody.getSize(), sortBy, null);
         // 按距离排序
         if (StringUtils.isNotBlank(location)) {
-            nativeSearchQueryBuilder.withSorts(SortBuilders
-                    .geoDistanceSort("location", new GeoPoint(location))
-                    .order(SortOrder.ASC)
-                    .unit(DistanceUnit.KILOMETERS));
+            nativeSearchQueryBuilder.withSorts(SortBuilders.geoDistanceSort("location", new GeoPoint(location)).order(SortOrder.ASC).unit(DistanceUnit.KILOMETERS));
         }
         SearchHits<HotelDoc> searchHits = documentUtil.query(nativeSearchQueryBuilder.build());
         // 查询距离
         List<HotelDoc> list = searchHits.getSearchHits().stream().map(searchHit -> {
             HotelDoc hotelDoc = searchHit.getContent();
             List<Object> sortValueList = searchHit.getSortValues();
-            if (sortValueList.size() > 0) {
+            if (!sortValueList.isEmpty()) {
                 hotelDoc.setDistance(sortValueList.get(0));
             }
             return hotelDoc;
@@ -79,6 +81,9 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
 
     /**
      * 查询城市/星级/品牌可选值
+     *
+     * @param searchRequestBody 搜索请求体
+     * @return 城市/星级/品牌可选值
      */
     @Override
     public Map<String, List<String>> filters(SearchRequestBody searchRequestBody) {
@@ -88,9 +93,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         TermsAggregationBuilder cityAgg = AggregationBuilders.terms("cityAgg").field("city");
         TermsAggregationBuilder starNameAgg = AggregationBuilders.terms("starAgg").field("starName");
         TermsAggregationBuilder brandAgg = AggregationBuilders.terms("brandAgg").field("brand");
-        SearchHits<HotelDoc> searchHits = documentUtil.query(new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .withAggregations(cityAgg, starNameAgg, brandAgg).build());
+        SearchHits<HotelDoc> searchHits = documentUtil.query(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withAggregations(cityAgg, starNameAgg, brandAgg).build());
         AggregationsContainer<?> aggregations = searchHits.getAggregations();
         if (aggregations != null) {
             Aggregations aggregation = (Aggregations) aggregations.aggregations();
@@ -104,9 +107,11 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         return map;
     }
 
-
     /**
      * 构建布尔查询
+     *
+     * @param searchRequestBody 搜索请求体
+     * @return 布尔查询构建器
      */
     private BoolQueryBuilder buildBoolQuery(SearchRequestBody searchRequestBody) {
         String key = searchRequestBody.getKey();

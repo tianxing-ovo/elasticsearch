@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * @author tianxing
+ */
 public interface HotelService extends IService<Hotel> {
 
     PageResult search(SearchRequestBody searchRequestBody);

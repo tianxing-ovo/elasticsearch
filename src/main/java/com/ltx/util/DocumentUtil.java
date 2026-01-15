@@ -39,6 +39,8 @@ import static org.springframework.data.domain.Sort.Order;
 
 /**
  * 文档工具类
+ *
+ * @author tianxing
  */
 @Component
 public class DocumentUtil {
@@ -51,6 +53,8 @@ public class DocumentUtil {
 
     /**
      * 新增所有文档
+     *
+     * @param hotelList 酒店列表
      */
     public void insertAllDocument(List<Hotel> hotelList) {
         List<HotelDoc> hotelDocList = hotelList.stream().map(HotelDoc::new).collect(Collectors.toList());
@@ -59,6 +63,8 @@ public class DocumentUtil {
 
     /**
      * 新增指定id的文档
+     *
+     * @param hotel 酒店
      */
     public void insertDocument(Hotel hotel) {
         HotelDoc hotelDoc = new HotelDoc(hotel);
@@ -69,11 +75,12 @@ public class DocumentUtil {
     /**
      * 构建查询条件: 会影响文档的相关度分数
      *
-     * @param queryBuilder 查询条件
+     * @param queryBuilder 查询构建器
      * @param page         页号
      * @param size         每页的文档数量
      * @param field        排序字段
      * @param name         高亮字段
+     * @return 分页查询构建器
      */
     public NativeSearchQueryBuilder buildQuery(QueryBuilder queryBuilder, int page, int size, String field, String name) {
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder().withQuery(queryBuilder);
@@ -89,6 +96,9 @@ public class DocumentUtil {
 
     /**
      * 构建查询条件: 会影响文档的相关度分数
+     *
+     * @param queryBuilder 查询构建器
+     * @return 分页查询构建器
      */
     public NativeSearchQuery buildQuery(QueryBuilder queryBuilder) {
         return buildQuery(queryBuilder, 0, 10, null, null).build();
@@ -190,7 +200,10 @@ public class DocumentUtil {
     }
 
     /**
-     * 根据id查询文档
+     * 根据id查询酒店文档
+     *
+     * @param id 文档id
+     * @return 酒店文档
      */
     public HotelDoc findById(Long id) {
         Optional<HotelDoc> optional = hotelDocRepository.findById(id);
@@ -222,11 +235,8 @@ public class DocumentUtil {
         System.out.println(updateResponse.getResult());
     }
 
-    /**
-     * 获取内容
-     */
+
     public List<HotelDoc> map(SearchHits<HotelDoc> searchHits) {
         return searchHits.getSearchHits().stream().map(SearchHit::getContent).collect(Collectors.toList());
     }
-
 }

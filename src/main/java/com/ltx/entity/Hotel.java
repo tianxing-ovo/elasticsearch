@@ -5,6 +5,8 @@ import lombok.Data;
 
 /**
  * 数据库实体类
+ *
+ * @author tianxing
  */
 @Data
 public class Hotel {

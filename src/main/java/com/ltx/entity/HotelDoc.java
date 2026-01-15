@@ -12,6 +12,8 @@ import org.springframework.data.elasticsearch.annotations.GeoPointField;
 
 /**
  * ES实体类
+ *
+ * @author tianxing
  */
 @Document(indexName = HotelConstant.INDEX_NAME)
 @Data

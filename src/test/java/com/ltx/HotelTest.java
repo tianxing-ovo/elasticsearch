@@ -1,7 +1,6 @@
 package com.ltx;
 
 import com.ltx.entity.HotelDoc;
-import com.ltx.repository.HotelDocRepository;
 import com.ltx.service.HotelService;
 import com.ltx.util.DocumentUtil;
 import com.ltx.util.IndexUtil;
@@ -18,6 +17,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.Objects;
 
 @SpringBootTest
 public class HotelTest {
@@ -31,9 +31,6 @@ public class HotelTest {
     @Resource
     private HotelService hotelService;
 
-    @Resource
-    private HotelDocRepository hotelDocRepository;
-
     private final Long id = 36934L;
 
 
@@ -42,24 +39,19 @@ public class HotelTest {
         TermsAggregationBuilder cityAgg = AggregationBuilders.terms("cityAgg").field("city");
         TermsAggregationBuilder starNameAgg = AggregationBuilders.terms("starAgg").field("starName");
         TermsAggregationBuilder brandAgg = AggregationBuilders.terms("brandAgg").field("brand");
-        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder().withAggregations(
-                cityAgg, starNameAgg, brandAgg
-        );
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder().withAggregations(cityAgg, starNameAgg, brandAgg);
         SearchHits<HotelDoc> searchHits = documentUtil.query(queryBuilder.build());
         AggregationsContainer<?> aggregations = searchHits.getAggregations();
-        Aggregations aggregation = (Aggregations) aggregations.aggregations();
+        Aggregations aggregation = (Aggregations) Objects.requireNonNull(aggregations).aggregations();
         ParsedStringTerms parsedStringTerms = aggregation.get("cityAgg");
         for (Terms.Bucket bucket : parsedStringTerms.getBuckets()) {
-            String key = (String) bucket.getKey(); // 获取聚合的键
-            long docCount = bucket.getDocCount(); // 获取符合条件的文档数量
-
+            // 获取聚合的键
+            String key = (String) bucket.getKey();
+            // 获取符合条件的文档数量
+            long docCount = bucket.getDocCount();
             // 在这里进行你的处理逻辑，例如输出或者存储结果
             System.out.println("Term: " + key + ", Doc Count: " + docCount);
-
         }
-
-
-
     }
 
     /**
