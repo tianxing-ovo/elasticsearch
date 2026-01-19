@@ -1,9 +1,8 @@
 package com.ltx.util;
 
+import jakarta.annotation.Resource;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * 索引工具类

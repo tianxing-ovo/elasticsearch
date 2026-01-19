@@ -1,13 +1,14 @@
-
-.search-bar{
+.search-bar {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.input-box{
+
+.input-box {
     display: flex;
     width: 35%;
 }
+
 .search-bar input {
     border: 1px solid #F80;
     width: 80%;
@@ -28,7 +29,7 @@
     height: 28px;
 }
 
-#complete-box{
+#complete-box {
     margin-top: 28px;
     position: absolute;
     z-index: 99;
@@ -38,7 +39,8 @@
     height: 120px;
     background-color: #fff;
 }
-#complete-box div{
+
+#complete-box div {
     padding-left: 7px;
 }
 
@@ -90,18 +92,21 @@ em {
     margin: auto;
     line-height: 100%;
 }
-.column-divider{
+
+.column-divider {
     width: 2px;
     border-radius: 1px;
-    box-shadow: 1px 0 0 rgba(0,0,0,.2) inset,-1px 0 0 rgba(255,255,255,.2) inset;
+    box-shadow: 1px 0 0 rgba(0, 0, 0, .2) inset, -1px 0 0 rgba(255, 255, 255, .2) inset;
 }
-.row-divider{
+
+.row-divider {
     margin: auto;
     width: 98%;
     border-radius: 1px;
     height: 3px;
-    box-shadow:0 1px 0 rgba(0,0,0,.2) inset,0 -1px 0 rgba(255,255,255,.2) inset;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .2) inset, 0 -1px 0 rgba(255, 255, 255, .2) inset;
 }
+
 a {
     text-decoration: none;
     color: #999;
@@ -123,9 +128,11 @@ a:hover {
     line-height: 30px;
     font-size: 12px;
 }
-.btn-arrow{
+
+.btn-arrow {
     border-radius: 3px;
 }
+
 .btn-arrow,
 .btn-arrow:visited,
 .btn-arrow:link,
@@ -140,7 +147,7 @@ a:hover {
     font-size: 16px;
     color: #AAA;
     text-decoration: none;
-    out-line: none
+    outline: none
 }
 
 .btn-arrow:hover {
@@ -234,6 +241,7 @@ body {
     padding: 2px 5px;
     zoom: 1;
 }
+
 .hotel-info {
     text-align: left;
     width: 50%;
@@ -241,6 +249,7 @@ body {
     flex-direction: column;
     justify-content: space-around;
 }
+
 #hotel-price {
     font-weight: bold;
     font-size: 24px;
@@ -258,10 +267,9 @@ body {
 }
 
 .hotel-score {
-    font-size: 14px;
     color: #365873;
     font-weight: 700;
-    font: arial, 'pingfang sc', 'Hiragino Sans GB', \5b8b\4f53, sans-serif
+    font: 14px/1.5 arial, 'pingfang sc', 'Hiragino Sans GB', \5b8b\4f53, sans-serif
 }
 
 .hotel-list {
@@ -270,14 +278,20 @@ body {
     width: 640px;
     height: 100%;
 }
-.hotel-list span{
-    font-size: 12px;font: arial,'pingfang sc','Hiragino Sans GB',\5b8b\4f53,sans-serif
+
+.hotel-list span {
+    font: 12px/1.5 arial, 'pingfang sc', 'Hiragino Sans GB', \5b8b\4f53, sans-serif
 }
+
 .order {
-    color: #2bba9e; cursor: default; font: 12px/1.5 tahoma,arial,'pingfang sc','Hiragino Sans GB',\5b8b\4f53,sans-serif;
+    color: #2bba9e;
+    cursor: default;
+    font: 12px/1.5 tahoma, arial, 'pingfang sc', 'Hiragino Sans GB', \5b8b\4f53, sans-serif;
 }
+
 .address {
-    margin-bottom: 10px;font: 12px/1.5 tahoma,arial,'pingfang sc','Hiragino Sans GB',\5b8b\4f53,sans-serif;
+    margin-bottom: 10px;
+    font: 12px/1.5 tahoma, arial, 'pingfang sc', 'Hiragino Sans GB', \5b8b\4f53, sans-serif;
 }
 
 .hotel-box {
@@ -317,9 +331,10 @@ body {
     height: 350px;
 }
 
-.marker-label{
+.marker-label {
     font-size: 12px;
 }
+
 .marker {
     position: absolute;
     top: -25px;
@@ -334,19 +349,21 @@ body {
     border-radius: 3px;
 }
 
-em{
+em {
     color: red;
 }
+
 .ad-mark {
     position: absolute;
     left: 5px;
     top: 0;
 }
-.ad-mark img{
-    filter: drop-shadow(1px 2px 1px rgba(0,0,0,.3))
+
+.ad-mark img {
+    filter: drop-shadow(1px 2px 1px rgba(0, 0, 0, .3))
 }
 
-.map-geo{
+.map-geo {
     position: relative;
     bottom: 35px;
     left: 310px;

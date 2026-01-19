@@ -44,11 +44,17 @@ public class HotelDoc {
     private String pic;
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String all;
-
+    // 距离
     private Object distance;
     // 是否投了广告
-    private Boolean isAD;
+    private Boolean isAd;
 
+    /**
+     * 根据Hotel对象构造HotelDoc对象
+     *
+     * @param hotel 酒店
+     */
+    @SuppressWarnings("SpellCheckingInspection")
     public HotelDoc(Hotel hotel) {
         BeanUtils.copyProperties(hotel, this, "latitude", "longitude");
         this.location = hotel.getLatitude() + ", " + hotel.getLongitude();

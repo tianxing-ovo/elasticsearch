@@ -4,55 +4,22 @@ import com.ltx.entity.HotelDoc;
 import com.ltx.service.HotelService;
 import com.ltx.util.DocumentUtil;
 import com.ltx.util.IndexUtil;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.elasticsearch.core.AggregationsContainer;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
-import java.util.Objects;
 
 @SpringBootTest
 public class HotelTest {
 
     @Resource
     private DocumentUtil documentUtil;
-
     @Resource
     private IndexUtil indexUtil;
-
     @Resource
     private HotelService hotelService;
-
     private final Long id = 36934L;
-
-
-    @Test
-    public void test() {
-        TermsAggregationBuilder cityAgg = AggregationBuilders.terms("cityAgg").field("city");
-        TermsAggregationBuilder starNameAgg = AggregationBuilders.terms("starAgg").field("starName");
-        TermsAggregationBuilder brandAgg = AggregationBuilders.terms("brandAgg").field("brand");
-        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder().withAggregations(cityAgg, starNameAgg, brandAgg);
-        SearchHits<HotelDoc> searchHits = documentUtil.query(queryBuilder.build());
-        AggregationsContainer<?> aggregations = searchHits.getAggregations();
-        Aggregations aggregation = (Aggregations) Objects.requireNonNull(aggregations).aggregations();
-        ParsedStringTerms parsedStringTerms = aggregation.get("cityAgg");
-        for (Terms.Bucket bucket : parsedStringTerms.getBuckets()) {
-            // 获取聚合的键
-            String key = (String) bucket.getKey();
-            // 获取符合条件的文档数量
-            long docCount = bucket.getDocCount();
-            // 在这里进行你的处理逻辑，例如输出或者存储结果
-            System.out.println("Term: " + key + ", Doc Count: " + docCount);
-        }
-    }
 
     /**
      * 创建索引
