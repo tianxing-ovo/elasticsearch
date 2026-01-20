@@ -1,12 +1,12 @@
 # Elasticsearch 酒店搜索系统
 
-基于 Spring Boot 3.4 和 Elasticsearch 8.x 的酒店搜索系统，提供全文搜索、多条件筛选、地理位置排序等功能。
+基于 Spring Boot 3.4.1 和 Elasticsearch 9.2.4 的酒店搜索系统，提供全文搜索、多条件筛选、地理位置排序等功能。
 
 ## 技术栈
 
 - **Spring Boot** 3.4.1 - 基础框架
 - **Spring Data Elasticsearch** 5.4.1 - Elasticsearch 集成
-- **Elasticsearch** 8.x - 搜索引擎
+- **Elasticsearch** 9.2.4 - 搜索引擎
 - **MyBatis-Plus** 3.5.9 - ORM 框架
 - **MySQL** 8.x - 关系型数据库
 - **Java** 17 - JDK 版本
