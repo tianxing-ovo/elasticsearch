@@ -34,7 +34,7 @@ public class HotelTest {
      */
     @Test
     public void findAllDocument() {
-        System.out.println(documentUtil.matchAllQuery());
+        documentUtil.matchAllQuery().forEach(System.out::println);
     }
 
     /**
