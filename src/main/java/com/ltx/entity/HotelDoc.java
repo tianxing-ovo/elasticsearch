@@ -42,6 +42,10 @@ public class HotelDoc {
     private String location;
     @Field(type = FieldType.Keyword, index = false)
     private String pic;
+    /**
+     * 1: 由(name, brand, business)组合的通过copyTo自动填充的搜索字段
+     * 2: 不存储原始值
+     */
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String all;
     // 距离

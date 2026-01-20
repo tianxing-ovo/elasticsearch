@@ -17,9 +17,9 @@
             <div class="logo">
                 <img src="./img/heima.png" alt="1"/>
                 <span>
-            <div class="logo-ch">黑马旅游</div>
-            <div class="logo-en">www.itheima.com</div>
-          </span>
+                        <div class="logo-ch">黑马旅游</div>
+                        <div class="logo-en">www.itheima.com</div>
+                    </span>
             </div>
             <div>
                 <input type="checkbox" id="toggle-button" v-model="isTest">
@@ -69,7 +69,8 @@
                 <div class="f-key"><strong>价格</strong></div>
                 <div class="column-divider"></div>
                 <div class="f-items">
-                    <div class="f-item" @click="clickFilter('price','0-100')"><a href="javascript:void(0)">100元以下</a>
+                    <div class="f-item" @click="clickFilter('price','0-100')"><a
+                            href="javascript:void(0)">100元以下</a>
                     </div>
                     <div class="f-item" @click="clickFilter('price','100-300')"><a
                             href="javascript:void(0)">100-300元</a></div>
@@ -110,10 +111,10 @@
                 <div class="hotel-box" v-for="(hotel,i) in hotels" :key="i"
                      style="display: flex;justify-content: space-between;" @mouseover="handleMarkerFocus(hotel)">
                     <div class="ad-mark" v-if="hotel.isAd">
-                        <img src="./img/ad.png" width="25"/>
+                        <img src="./img/ad.png" width="260" alt="广告"/>
                     </div>
                     <div style="width: 0;"></div>
-                    <div style="width: 25%"><img width="100%" :src="hotel.pic"></div>
+                    <div style="width: 25%"><img width="100%" :src="hotel.pic" alt="酒店图片"/></div>
                     <div class="hotel-info">
                         <div class="hotel-name" v-html="hotel.name">
                         </div>
@@ -140,7 +141,7 @@
                 <div class="map-head">地图预览</div>
                 <div class="amap" id="container"></div>
                 <div class="map-geo" @click="getGeoLoc">
-                    <img src="https://a.amap.com/jsapi/static/image/plugin/waite.png" v-show="loading">
+                    <img src="https://a.amap.com/jsapi/static/image/plugin/waite.png" v-show="loading" alt="定位中"/>
                 </div>
             </div>
         </div>
@@ -150,7 +151,8 @@
 <script src="./js/vue.js"></script>
 <script src="./js/axios.min.js"></script>
 <script src="./js/amap.min.js"></script>
-<script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=ddd292c88aa1bad9c04891a47724f40a"></script>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=2.0&key=ddd292c88aa1bad9c04891a47724f40a"></script>
 
 
 <script>
@@ -233,7 +235,7 @@
             }
         },
         created() {
-            // 页面加载时，先搜索一下
+            // 页面加载时先搜索一下
             this.search();
             // 获取过滤项
             this.getFilter();
@@ -241,28 +243,28 @@
         mounted() {
             //初始化地图
             this.map = new AMap.Map('container', {
-                resizeEnable: true, //是否监控地图容器尺寸变化
-                zoom: 11, //初始地图级别
-                center: [120.0, 32.0], //初始地图中心点
+                resizeEnable: true,
+                zoom: 11,
+                center: [120.0, 32.0],
             });
             // 初始化定位系统
             AMap.plugin('AMap.Geolocation', () => {
                 this.geolocation = new AMap.Geolocation({
-                    position: 'RT',    //定位按钮的停靠位置
-                    buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
-                    zoomToAccuracy: true,   //定位成功后是否自动调整地图视野到定位点
+                    position: 'RT',
+                    buttonOffset: new AMap.Pixel(10, 20),
+                    zoomToAccuracy: true,
                 });
-
-                AMap.Event.addListener(geolocation, 'complete', result => {
+                // 返回定位信息
+                this.geolocation.on('complete', result => {
                     if (this.params.page !== 1) {
                         this.params.page = 1;
                         this.loc = result.position.lat + ", " + result.position.lng;
                     } else {
                         this.searchByMap(result.position.lat + ", " + result.position.lng);
                     }
-
-                });//返回定位信息
-                AMap.Event.addListener(geolocation, 'error', err => console.log(err));      //返回定位出错信息
+                });
+                // 返回定位出错信息
+                this.geolocation.on('error', err => console.log(err));
             });
 
             let oDiv = document.querySelector(".map-box"),
@@ -282,10 +284,8 @@
             },
             handleKeyUp(e) {
                 if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 8) {
-                    // 用户输入的字符，需要自动补全
                     this.getSuggestion();
                 } else if (e.keyCode === 13) {
-                    // 用户按回车，需要搜索
                     this.search();
                     this.getFilter();
                 } else if (e.keyCode === 38) {
@@ -304,9 +304,8 @@
                 this.search();
                 this.getFilter();
             },
-            getSuggestion() { // 查询自动补全
+            getSuggestion() {
                 if (!this.params.key) {
-                    // key没有值，不去搜索了
                     this.ops = [];
                     return;
                 }
@@ -330,7 +329,7 @@
                 }
                 // 准备参数
                 const {filters: {price: ps, ...fs}, ...params} = this.params;
-                for (_k in fs) {
+                for (const _k in fs) {
                     params[_k] = fs[_k];
                 }
                 // 处理价格
@@ -352,7 +351,7 @@
             searchByMap(location) {
                 // 准备参数
                 const {filters: {price: ps, ...fs}, ...params} = this.params;
-                for (_k in fs) {
+                for (const _k in fs) {
                     params[_k] = fs[_k];
                 }
                 // 处理价格
@@ -362,7 +361,6 @@
                     let max = parseInt(pArr[1]);
                     params.maxPrice = max === 0 ? 999999 : max;
                 }
-
                 // 准备地址
                 if (location) {
                     params.location = location;
@@ -585,7 +583,6 @@
             updateMarker(marker, icon, text, position, id) {
                 // 自定义点标记内容
                 const markerContent = document.createElement("div");
-
                 // 点标记中的图标
                 const markerImg = document.createElement("img");
                 markerImg.className = "markerlnglat";
@@ -593,15 +590,13 @@
                 markerImg.setAttribute('width', '25px');
                 markerImg.setAttribute('height', '34px');
                 markerContent.appendChild(markerImg);
-
                 // 点标记中的文本
                 if (text) {
-                    var markerSpan = document.createElement("span");
+                    const markerSpan = document.createElement("span");
                     markerSpan.className = 'marker';
                     markerSpan.innerHTML = text;
                     markerContent.appendChild(markerSpan);
                 }
-
                 marker.setContent(markerContent);
                 marker.setPosition(position);
                 marker.vid = id;
@@ -611,7 +606,7 @@
                 this.geolocation.getCurrentPosition((status, result) => {
                     this.loading = false;
                     if (status === 'complete') {
-                        console.log("successs")
+                        console.log("success")
                         // https://a.amap.com/jsapi/static/image/plugin/point.png
                         this.addMaker('//a.amap.com/jsapi/static/image/plugin/point.png', result.position.lng, result.position.lat);
                         if (this.params.page !== 1) {
@@ -628,12 +623,11 @@
             addMaker(iconUrl, lng, lat) {
                 // 创建 AMap.Icon 实例：
                 let icon = new AMap.Icon({
-                    size: new AMap.Size(25, 25),    // 图标尺寸
+                    size: new AMap.Size(25, 25),
                     image: iconUrl,  // Icon的图像
-                    imageOffset: new AMap.Pixel(0, 0),  // 图像相对展示区域的偏移量，适于雪碧图等
-                    imageSize: new AMap.Size(25, 25)   // 根据所设置的大小拉伸或压缩图片
+                    imageOffset: new AMap.Pixel(0, 0),
+                    imageSize: new AMap.Size(25, 25)
                 });
-
                 // 将 Icon 实例添加到 marker 上:
                 let marker = new AMap.Marker({
                     position: new AMap.LngLat(lng, lat),

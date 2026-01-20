@@ -29,7 +29,6 @@ import org.springframework.data.elasticsearch.core.query.highlight.HighlightPara
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 文档工具类
@@ -53,7 +52,7 @@ public class DocumentUtil {
      */
     public void insertAllDocument(List<Hotel> hotelList) {
         // 将酒店列表转换为酒店文档列表
-        List<HotelDoc> hotelDocList = hotelList.stream().map(HotelDoc::new).collect(Collectors.toList());
+        List<HotelDoc> hotelDocList = hotelList.stream().map(HotelDoc::new).toList();
         // 批量保存到Elasticsearch
         hotelDocRepository.saveAll(hotelDocList);
     }
@@ -86,7 +85,7 @@ public class DocumentUtil {
         if (StringUtils.isNotEmpty(name)) {
             HighlightField highlightField = new HighlightField(name);
             HighlightParameters params = HighlightParameters.builder().withRequireFieldMatch(false).build();
-            Highlight highlight = new Highlight(params, java.util.Collections.singletonList(highlightField));
+            Highlight highlight = new Highlight(params, Collections.singletonList(highlightField));
             builder.withHighlightQuery(new HighlightQuery(highlight, HotelDoc.class));
         }
         return builder.build();
@@ -110,7 +109,8 @@ public class DocumentUtil {
      */
     public NativeQuery buildFilter(Query filterQuery) {
         Query boolQuery = Query.of(q -> q.bool(b -> b.filter(filterQuery)));
-        return NativeQuery.builder().withQuery(boolQuery).withPageable(PageRequest.of(0, 10)).build();
+        return NativeQuery.builder().withQuery(boolQuery)
+                .withPageable(PageRequest.of(0, 10)).build();
     }
 
     /**
@@ -155,7 +155,7 @@ public class DocumentUtil {
      * @return 酒店文档列表
      */
     public List<HotelDoc> multiMatchQuery(String text, String... fieldNames) {
-        Query query = Query.of(q -> q.multiMatch(m -> m.fields(Arrays.asList(fieldNames)).query(text)));
+        Query query = Query.of(q -> q.multiMatch(m -> m.fields(List.of(fieldNames)).query(text)));
         SearchHits<HotelDoc> searchHits = query(buildQuery(query));
         return map(searchHits);
     }
@@ -216,17 +216,29 @@ public class DocumentUtil {
     }
 
     /**
-     * 函数评分查询: 根据自定义函数计算文档的相关度分数
+     * 函数评分查询：搜索关键字并对指定品牌加权
      *
+     * @param keyword    搜索关键字
+     * @param boostBrand 需要加权的品牌
+     * @param weight     权重值
      * @return 酒店文档列表
      */
-    public List<HotelDoc> functionScoreQuery() {
-        // 原始查询: match查询 "all" 字段包含 "外滩"
-        Query matchQuery = Query.of(q -> q.match(m -> m.field("all").query("外滩")));
-        // 过滤条件: brand = "如家"
-        Query filterQuery = Query.of(q -> q.term(t -> t.field("brand").value("如家")));
-        // 构建 function score 查询
-        FunctionScoreQuery functionScoreQuery = FunctionScoreQuery.of(fs -> fs.query(matchQuery).functions(f -> f.filter(filterQuery).weight(10.0)).boostMode(FunctionBoostMode.Sum));
+    public List<HotelDoc> functionScoreQuery(String keyword, String boostBrand, double weight) {
+        Query baseQuery;
+        if (StringUtils.isBlank(keyword)) {
+            // 匹配所有文档
+            baseQuery = Query.of(q -> q.matchAll(m -> m));
+        } else {
+            // 对"all"字段进行匹配
+            baseQuery = Query.of(q -> q.match(m -> m.field("all").query(keyword)));
+        }
+        // 过滤条件: 对指定品牌加权
+        Query filterQuery = Query.of(q -> q.term(t -> t.field("brand").value(boostBrand)));
+        // 构建函数评分查询
+        FunctionScoreQuery functionScoreQuery = FunctionScoreQuery.of(fs -> fs
+                .query(baseQuery)
+                .functions(f -> f.filter(filterQuery).weight(weight))
+                .boostMode(FunctionBoostMode.Sum));
         Query query = Query.of(q -> q.functionScore(functionScoreQuery));
         SearchHits<HotelDoc> searchHits = query(buildQuery(query));
         return map(searchHits);
@@ -242,7 +254,9 @@ public class DocumentUtil {
      * @return 酒店文档列表
      */
     public List<HotelDoc> geoDistanceQuery(String name, double lat, double lon, String distance) {
-        Query query = Query.of(q -> q.geoDistance(g -> g.field(name).location(l -> l.latlon(ll -> ll.lat(lat).lon(lon))).distance(distance).distanceType(GeoDistanceType.Arc)));
+        Query query = Query.of(q -> q.geoDistance(g -> g.field(name)
+                .location(l -> l.latlon(ll -> ll.lat(lat).lon(lon)))
+                .distance(distance).distanceType(GeoDistanceType.Arc)));
         SearchHits<HotelDoc> searchHits = query(buildFilter(query));
         return map(searchHits);
     }
@@ -290,6 +304,6 @@ public class DocumentUtil {
      * @return 酒店文档列表
      */
     public List<HotelDoc> map(SearchHits<HotelDoc> searchHits) {
-        return searchHits.getSearchHits().stream().map(SearchHit::getContent).collect(Collectors.toList());
+        return searchHits.getSearchHits().stream().map(SearchHit::getContent).toList();
     }
 }
