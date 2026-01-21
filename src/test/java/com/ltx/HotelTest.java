@@ -1,9 +1,7 @@
 package com.ltx;
 
-import com.ltx.entity.HotelDoc;
 import com.ltx.service.HotelService;
 import com.ltx.util.DocumentUtil;
-import com.ltx.util.IndexUtil;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,18 +14,8 @@ public class HotelTest {
     @Resource
     private DocumentUtil documentUtil;
     @Resource
-    private IndexUtil indexUtil;
-    @Resource
     private HotelService hotelService;
     private final Long id = 36934L;
-
-    /**
-     * 创建索引
-     */
-    @Test
-    public void createIndex() {
-        indexUtil.createIndex(HotelDoc.class);
-    }
 
     /**
      * 查询所有文档

@@ -12,6 +12,7 @@ import org.springframework.data.elasticsearch.annotations.GeoPointField;
 
 /**
  * ES实体类
+ * createIndex默认值为true(会自动创建索引)
  *
  * @author tianxing
  */
