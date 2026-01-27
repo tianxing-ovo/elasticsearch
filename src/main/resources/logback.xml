@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <logger name="com.ltx.HotelTest" level="off"/>
     <logger name="org.springframework.boot.test" level="off"/>
     <logger name="org.springframework.data.repository" level="off"/>
     <logger name="org.springframework.test.context.support.AbstractContextLoader" level="off"/>

@@ -10,9 +10,10 @@ import lombok.Data;
 @Data
 public class SearchRequestBody {
     private String key;
-    private Integer page = 1;
-    private Integer size = 10;
+    private Integer pageNumber = 1;
+    private Integer pageSize = 10;
     private String sortBy;
+    private String sortOrder = "asc";
     private String city;
     private String brand;
     private String starName;

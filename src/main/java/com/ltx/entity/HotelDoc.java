@@ -1,6 +1,6 @@
 package com.ltx.entity;
 
-import com.ltx.constant.HotelConstant;
+import com.ltx.constant.Constant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -16,7 +16,7 @@ import org.springframework.data.elasticsearch.annotations.GeoPointField;
  *
  * @author tianxing
  */
-@Document(indexName = HotelConstant.INDEX_NAME)
+@Document(indexName = Constant.INDEX_NAME)
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
@@ -52,6 +52,7 @@ public class HotelDoc {
     // 距离
     private Object distance;
     // 是否投了广告
+    @Field(type = FieldType.Boolean)
     private Boolean isAd;
 
     /**
@@ -59,9 +60,9 @@ public class HotelDoc {
      *
      * @param hotel 酒店
      */
-    @SuppressWarnings("SpellCheckingInspection")
     public HotelDoc(Hotel hotel) {
         BeanUtils.copyProperties(hotel, this, "latitude", "longitude");
         this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
+        isAd = false;
     }
 }
