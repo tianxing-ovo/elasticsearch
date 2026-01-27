@@ -14,23 +14,40 @@
 ## 项目结构
 
 ```
-src/main/java/com/ltx/
-├── Application.java           # 启动类
-├── constant/                   # 常量定义
-├── controller/                 # 控制器层
-├── entity/                     # 实体类
-│   ├── Hotel.java             # 酒店实体（MySQL）
-│   ├── HotelDoc.java          # 酒店文档（Elasticsearch）
-│   ├── PageResult.java        # 分页结果
-│   └── SearchRequestBody.java # 搜索请求体
-├── mapper/                     # MyBatis Mapper
-├── repository/                 # Elasticsearch Repository
-├── service/                    # 服务层
-│   └── impl/
-│       └── HotelServiceImpl.java
-└── util/                       # 工具类
-    ├── DocumentUtil.java      # 文档操作工具
-    └── IndexUtil.java         # 索引操作工具
+src/
+├── main/
+│   ├── java/com/ltx/
+│   │   ├── Application.java              # 启动类
+│   │   ├── constant/
+│   │   │   └── Constant.java             # 常量定义
+│   │   ├── controller/
+│   │   │   └── HotelController.java      # 酒店控制器
+│   │   ├── entity/
+│   │   │   ├── Hotel.java                # 酒店实体（MySQL）
+│   │   │   ├── HotelDoc.java             # 酒店文档（Elasticsearch）
+│   │   │   ├── PageResult.java           # 分页结果
+│   │   │   └── SearchRequestBody.java    # 搜索请求体
+│   │   ├── mapper/
+│   │   │   └── HotelMapper.java          # MyBatis Mapper
+│   │   ├── repository/
+│   │   │   └── HotelDocRepository.java   # Elasticsearch Repository
+│   │   └── service/
+│   │       ├── HotelService.java         # 服务接口
+│   │       └── impl/
+│   │           └── HotelServiceImpl.java # 服务实现（含距离计算）
+│   └── resources/
+│       ├── application.properties        # 配置文件
+│       ├── logback.xml                   # 日志配置
+│       ├── json/                         # JSON 配置
+│       ├── mapper/                       # MyBatis XML
+│       ├── sql/                          # SQL 脚本
+│       └── static/                       # 静态资源
+│           ├── index.html                # 前端页面
+│           ├── css/                      # 样式文件
+│           ├── js/                       # JavaScript
+│           └── img/                      # 图片资源
+└── test/java/com/ltx/
+    └── HotelTest.java                    # 单元测试类
 ```
 
 ## 核心功能
@@ -50,9 +67,17 @@ src/main/java/com/ltx/
 
 - **关键字搜索** - 支持酒店名称、地址、商圈等多字段搜索
 - **条件筛选** - 按城市、品牌、星级、价格范围筛选
+- **距离计算** - 使用 Haversine 公式计算用户到酒店的距离
 - **距离排序** - 根据用户位置按距离排序
 - **广告置顶** - 使用 function_score 提升广告酒店排名
 - **聚合统计** - 动态获取筛选项的可选值
+
+### 前端功能
+
+- **自动定位** - 使用高德地图 API 获取用户位置
+- **位置缓存** - 将位置信息缓存到 localStorage（1小时有效）
+- **手动定位** - 支持用户手动触发重新定位
+- **地图预览** - 在地图上显示酒店位置标记
 
 ## 快速开始
 
@@ -100,9 +125,10 @@ Content-Type: application/json
 
 {
   "key": "外滩",
-  "page": 1,
-  "size": 10,
+  "pageNumber": 1,
+  "pageSize": 10,
   "sortBy": "default",
+  "sortOrder": "asc",
   "city": "上海",
   "brand": "",
   "starName": "",
@@ -111,6 +137,22 @@ Content-Type: application/json
   "location": "31.2, 121.5"
 }
 ```
+
+**参数说明：**
+
+| 参数         | 类型      | 必填 | 说明                                |
+|------------|---------|----|-----------------------------------|
+| key        | String  | 否  | 搜索关键字                             |
+| pageNumber | Integer | 否  | 页码，默认 1                           |
+| pageSize   | Integer | 否  | 每页数量，默认 10                        |
+| sortBy     | String  | 否  | 排序方式：default/score/price/distance |
+| sortOrder  | String  | 否  | 排序顺序：asc/desc                     |
+| city       | String  | 否  | 城市筛选                              |
+| brand      | String  | 否  | 品牌筛选                              |
+| starName   | String  | 否  | 星级筛选                              |
+| minPrice   | Integer | 否  | 最低价格                              |
+| maxPrice   | Integer | 否  | 最高价格                              |
+| location   | String  | 否  | 用户位置（纬度,经度），用于计算距离                |
 
 ### 获取筛选项
 
