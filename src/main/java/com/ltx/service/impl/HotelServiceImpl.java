@@ -105,14 +105,15 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         final double finalUserLat = userLat;
         final double finalUserLon = userLon;
         final boolean finalHasLocation = hasLocation;
+        // 给HotelDoc对象设置距离属性
         List<HotelDoc> hotelDocList = searchHits.getSearchHits().stream().map(searchHit -> {
             HotelDoc hotelDoc = searchHit.getContent();
-            // 计算用户到酒店的距离
             if (finalHasLocation && StringUtils.isNotBlank(hotelDoc.getLocation())) {
                 String[] hotelLatLon = hotelDoc.getLocation().split(",");
                 if (hotelLatLon.length == 2) {
                     double hotelLat = Double.parseDouble(hotelLatLon[0].trim());
                     double hotelLon = Double.parseDouble(hotelLatLon[1].trim());
+                    // 计算用户到酒店的距离
                     double distance = calculateDistance(finalUserLat, finalUserLon, hotelLat, hotelLon);
                     hotelDoc.setDistance(distance);
                 }

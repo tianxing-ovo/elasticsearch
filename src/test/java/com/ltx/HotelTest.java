@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
@@ -81,5 +82,21 @@ public class HotelTest {
         UpdateQuery updateQuery = UpdateQuery.builder(id.toString()).withDocument(document).build();
         UpdateResponse updateResponse = elasticsearchOperations.update(updateQuery, indexCoordinates);
         log.info("更新文档成功, id: {}, 结果: {}", id, updateResponse.getResult());
+    }
+
+    /**
+     * 重建索引
+     */
+    @Test
+    public void recreateIndex() {
+        IndexOperations indexOperations = elasticsearchOperations.indexOps(HotelDoc.class);
+        if (indexOperations.exists()) {
+            indexOperations.delete();
+            log.info("旧索引已删除");
+        }
+        indexOperations.create();
+        indexOperations.putMapping(indexOperations.createMapping());
+        log.info("新索引已根据注解重建");
+        saveAll();
     }
 }

@@ -5,10 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.GeoPointField;
+import org.springframework.data.elasticsearch.annotations.*;
+import org.springframework.data.elasticsearch.core.suggest.Completion;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ES实体类
@@ -17,13 +18,14 @@ import org.springframework.data.elasticsearch.annotations.GeoPointField;
  * @author tianxing
  */
 @Document(indexName = Constant.INDEX_NAME)
+@Setting(settingPath = "json/settings.json")
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
 public class HotelDoc {
     @Field(type = FieldType.Keyword)
     private Long id;
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", copyTo = "all")
+    @Field(type = FieldType.Text, searchAnalyzer = "ik_smart", analyzer = "text_analyzer", copyTo = "all")
     private String name;
     @Field(type = FieldType.Keyword, index = false)
     private String address;
@@ -47,10 +49,13 @@ public class HotelDoc {
      * 1: 由(name, brand, business)组合的通过copyTo自动填充的搜索字段
      * 2: 不存储原始值
      */
-    @Field(type = FieldType.Text, analyzer = "ik_max_word")
+    @Field(type = FieldType.Text, searchAnalyzer = "ik_smart", analyzer = "text_analyzer")
     private String all;
     // 距离
     private Object distance;
+    // 自动补全字段
+    @CompletionField(analyzer = "completion_analyzer")
+    private Completion suggestion;
     // 是否投了广告
     @Field(type = FieldType.Boolean)
     private Boolean isAd;
@@ -62,7 +67,17 @@ public class HotelDoc {
      */
     public HotelDoc(Hotel hotel) {
         BeanUtils.copyProperties(hotel, this, "latitude", "longitude");
-        this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
+        location = hotel.getLatitude() + ", " + hotel.getLongitude();
         isAd = false;
+        // 品牌和商圈进行自动补全
+        if (business.contains("/")) {
+            // business有多个值需要切割
+            List<String> input = new ArrayList<>();
+            input.add(brand);
+            input.addAll(List.of(business.split("/")));
+            suggestion = new Completion(input);
+        } else {
+            suggestion = new Completion(new String[]{brand, business});
+        }
     }
 }
