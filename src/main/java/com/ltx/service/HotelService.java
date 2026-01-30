@@ -8,7 +8,6 @@ import com.ltx.entity.SearchRequestBody;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * @author tianxing
  */
@@ -17,4 +16,6 @@ public interface HotelService extends IService<Hotel> {
     PageResult search(SearchRequestBody searchRequestBody);
 
     Map<String, List<String>> filters(SearchRequestBody searchRequestBody);
+
+    List<String> getSuggestions(String prefix);
 }

@@ -6,7 +6,6 @@ import com.ltx.service.HotelService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -41,5 +40,16 @@ public class HotelController {
     @PostMapping("/filters")
     public Map<String, List<String>> filters(@RequestBody SearchRequestBody searchRequestBody) {
         return hotelService.filters(searchRequestBody);
+    }
+
+    /**
+     * 自动补全
+     *
+     * @param prefix 前缀
+     * @return 自动补全结果
+     */
+    @GetMapping("/suggestion")
+    public List<String> getSuggestions(@RequestParam("key") String prefix) {
+        return hotelService.getSuggestions(prefix);
     }
 }

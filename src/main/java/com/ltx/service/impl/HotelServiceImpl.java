@@ -12,6 +12,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScoreQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.core.search.Suggester;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ltx.constant.Constant;
 import com.ltx.entity.Hotel;
@@ -30,10 +31,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author tianxing
@@ -222,5 +220,39 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return Constant.R * c;
+    }
+
+    /**
+     * 自动补全
+     *
+     * @param prefix 前缀
+     * @return 自动补全结果
+     */
+    @Override
+    public List<String> getSuggestions(String prefix) {
+        if (StringUtils.isBlank(prefix)) {
+            return Collections.emptyList();
+        }
+        // 构建Suggester
+        Suggester suggester = Suggester.of(s -> s
+                .suggesters("suggestions", fs -> fs
+                        .prefix(prefix)
+                        .completion(c -> c
+                                .field("suggestion")
+                                .skipDuplicates(true)
+                                .size(10))));
+        // 构建查询
+        NativeQuery query = NativeQuery.builder().withSuggester(suggester).build();
+        // 发起搜索请求
+        SearchHits<HotelDoc> searchHits = elasticsearchOperations.search(query, HotelDoc.class);
+        // 解析结果
+        List<String> list = new ArrayList<>();
+        var suggest = searchHits.getSuggest();
+        if (suggest != null) {
+            var suggestion = suggest.getSuggestion("suggestions");
+            suggestion.getEntries().forEach(entry -> entry.getOptions()
+                    .forEach(option -> list.add(option.getText())));
+        }
+        return list;
     }
 }
