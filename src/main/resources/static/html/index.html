@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <title>黑马旅游</title>
-    <link rel="icon" type="image/png" href="./img/heima.png">
+    <link rel="icon" type="image/png" href="../img/heima.png">
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
-    <link rel="stylesheet" href="./css/index.css" />
-    <link rel="stylesheet" href="./css/banner.css" />
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/banner.css" />
 </head>
 
 <body>
@@ -15,7 +15,7 @@
         <div style="width: 70%;text-align: center;margin: auto;">
             <div class="banner">
                 <div class="logo">
-                    <img src="./img/heima.png" alt="1" />
+                    <img src="../img/heima.png" alt="1" />
                     <span>
                         <div class="logo-ch">黑马旅游</div>
                         <div class="logo-en">www.itheima.com</div>
@@ -106,7 +106,7 @@
                     <div class="hotel-box" v-for="(hotel,i) in hotels" :key="i"
                         style="display: flex;justify-content: space-between;" @mouseover="handleMarkerFocus(hotel)">
                         <div class="ad-mark" v-if="hotel.isAd">
-                            <img src="./img/ad.png" width="30" alt="广告" />
+                            <img src="../img/ad.png" width="30" alt="广告" />
                         </div>
                         <div style="width: 0;"></div>
                         <div style="width: 25%"><img width="100%" :src="hotel.pic" alt="酒店图片" /></div>
@@ -143,9 +143,9 @@
         </div>
     </div>
 
-    <script src="./js/vue.js"></script>
-    <script src="./js/axios.min.js"></script>
-    <script src="./js/amap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/axios.min.js"></script>
+    <script src="../js/amap.min.js"></script>
     <script type="text/javascript"
         src="https://webapi.amap.com/maps?v=2.0&key=ddd292c88aa1bad9c04891a47724f40a"></script>
 

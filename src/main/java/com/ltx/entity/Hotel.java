@@ -1,6 +1,5 @@
 package com.ltx.entity;
 
-
 import lombok.Data;
 
 /**
@@ -34,5 +33,7 @@ public class Hotel {
     private String longitude;
 
     private String pic;
+
+    private Boolean isAd;
 
 }

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>酒店后台管理</title>
+    <link rel="icon" type="image/png" href="../img/heima.png">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+        }
+
+        .main-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .table-ops {
+            margin-bottom: 10px;
+        }
+
+        .pagination {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        /* 强制 Dialog 底部左对齐 */
+        .el-dialog__footer {
+            text-align: left !important;
+        }
+
+        /* 调整表格样式：增大字体，保持紧凑 */
+        .el-table--small {
+            font-size: 14px;
+        }
+
+        .el-table--small td,
+        .el-table--small th {
+            padding: 8px 0;
+        }
+
+        /* 紧凑表单，消除滚动条 */
+        .el-dialog__body {
+            padding: 10px 20px;
+        }
+
+        .el-form-item {
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="main-wrapper">
+            <!-- 操作栏 -->
+            <div class="table-ops">
+                <el-button type="primary" size="small" icon="el-icon-plus" @click="handleAdd">新增酒店</el-button>
+                <el-button icon="el-icon-refresh" size="small" @click="getList">刷新</el-button>
+            </div>
+
+            <!-- 酒店列表 -->
+            <el-table :data="tableData" border stripe size="small" v-loading="loading" style="width: 100%">
+                <el-table-column prop="id" label="ID" width="100" align="center"></el-table-column>
+                <el-table-column prop="name" label="酒店名称" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column prop="address" label="地址" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column prop="price" label="价格" width="100" align="center">
+                    <template slot-scope="scope">￥{{ scope.row.price }}</template>
+                </el-table-column>
+                <el-table-column prop="score" label="评分" width="80" align="center"></el-table-column>
+                <el-table-column prop="brand" label="品牌" width="120" align="center"></el-table-column>
+                <el-table-column prop="city" label="城市" width="100" align="center"></el-table-column>
+                <el-table-column label="广告置顶" width="120" align="center">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.isAd" active-color="#13ce66" inactive-color="#ff4949"
+                            @change="handleAdChange(scope.row)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="200" align="center">
+                    <template slot-scope="scope">
+                        <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+                        <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="page.current" :page-sizes="[10, 20, 50, 100]" :page-size="page.size"
+                    layout="total, sizes, prev, pager, next, jumper" :total="page.total">
+                </el-pagination>
+            </div>
+        </div>
+
+        <!-- 编辑/新增对话框 -->
+        <el-dialog :title="form.id ? '编辑酒店' : '新增酒店'" :visible.sync="dialogVisible" width="50%" top="5vh"
+            append-to-body>
+            <el-form :model="form" ref="hotelForm" label-width="100px" size="small">
+                <el-form-item label="酒店名称" prop="name">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="地址" prop="address">
+                    <el-input v-model="form.address"></el-input>
+                </el-form-item>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="价格" prop="price">
+                            <el-input v-model="form.price" type="number"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="评分" prop="score">
+                            <el-input v-model="form.score" type="number"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="品牌" prop="brand">
+                            <el-input v-model="form.brand"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="城市" prop="city">
+                            <el-input v-model="form.city"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="星级" prop="starName">
+                            <el-input v-model="form.starName"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="商圈" prop="business">
+                            <el-input v-model="form.business"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="经度" prop="longitude">
+                            <el-input v-model="form.longitude"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="纬度" prop="latitude">
+                            <el-input v-model="form.latitude"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-form-item label="图片URL" prop="pic">
+                    <el-input v-model="form.pic"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="handleSave">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+
+    <!-- Vue & Element UI & Axios -->
+    <script src="../js/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="../js/axios.min.js"></script>
+
+    <script>
+        // 配置Axios
+        axios.defaults.baseURL = "";
+
+        new Vue({
+            el: '#app',
+            data: {
+                loading: false,
+                tableData: [],
+                page: {
+                    current: 1,
+                    size: 10,
+                    total: 0
+                },
+                dialogVisible: false,
+                form: {}
+            },
+            created() {
+                this.getList();
+            },
+            methods: {
+                // 获取列表
+                getList() {
+                    this.loading = true;
+                    axios.get('/admin/hotel/list', {
+                        params: {
+                            pageNumber: this.page.current,
+                            pageSize: this.page.size
+                        }
+                    }).then(res => {
+                        this.tableData = res.data.records;
+                        this.page.total = res.data.total;
+                    }).catch(err => {
+                        this.$message.error('获取数据失败');
+                        console.error(err);
+                    }).finally(() => {
+                        this.loading = false;
+                    });
+                },
+                // 分页处理
+                handleSizeChange(val) {
+                    this.page.size = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page.current = val;
+                    this.getList();
+                },
+                // 新增
+                handleAdd() {
+                    this.form = {};
+                    this.dialogVisible = true;
+                },
+                // 编辑
+                handleEdit(row) {
+                    console.log('Edit clicked', row);
+                    // 深拷贝，避免引用关系
+                    this.form = JSON.parse(JSON.stringify(row));
+                    // 确保 ID 是存在的，如果 ID 只有 id 字段
+                    this.dialogVisible = true;
+                },
+                // 删除
+                handleDelete(row) {
+                    this.$confirm('确认删除该酒店?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.delete(`/admin/hotel/${row.id}`).then(() => {
+                            this.$message.success('删除成功');
+                            this.getList();
+                        });
+                    });
+                },
+                // 保存（新增或更新）
+                handleSave() {
+                    const method = this.form.id ? 'put' : 'post';
+                    const url = '/admin/hotel';
+
+                    axios[method](url, this.form).then(() => {
+                        this.$message.success(this.form.id ? '更新成功' : '新增成功');
+                        this.dialogVisible = false;
+                        this.getList();
+                    }).catch(err => {
+                        this.$message.error('操作失败');
+                    });
+                },
+                // 广告状态切换
+                handleAdChange(row) {
+                    axios.put(`/admin/hotel/${row.id}/ad`, null, {
+                        params: { isAd: row.isAd }
+                    }).then(res => {
+                        this.$message.success(res.data);
+                    }).catch(err => {
+                        row.isAd = !row.isAd; // 恢复状态
+                        this.$message.error('操作失败');
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

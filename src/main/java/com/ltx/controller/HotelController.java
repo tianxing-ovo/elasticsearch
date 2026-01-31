@@ -10,11 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 酒店搜索
+ *
  * @author tianxing
  */
 @RestController
 @RequestMapping("/hotel")
-@CrossOrigin("http://localhost:88")
 public class HotelController {
 
     @Resource

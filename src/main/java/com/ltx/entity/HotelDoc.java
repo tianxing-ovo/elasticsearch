@@ -68,7 +68,8 @@ public class HotelDoc {
     public HotelDoc(Hotel hotel) {
         BeanUtils.copyProperties(hotel, this, "latitude", "longitude");
         location = hotel.getLatitude() + ", " + hotel.getLongitude();
-        isAd = false;
+        // 从MySQL获取isAd，如果为null则默认false
+        isAd = hotel.getIsAd() != null ? hotel.getIsAd() : false;
         // 品牌和商圈进行自动补全
         if (business.contains("/")) {
             // business有多个值需要切割
@@ -77,7 +78,7 @@ public class HotelDoc {
             input.addAll(List.of(business.split("/")));
             suggestion = new Completion(input);
         } else {
-            suggestion = new Completion(new String[]{brand, business});
+            suggestion = new Completion(new String[] { brand, business });
         }
     }
 }

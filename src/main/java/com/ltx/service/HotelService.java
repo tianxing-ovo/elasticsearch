@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 酒店搜索服务
+ *
  * @author tianxing
  */
 public interface HotelService extends IService<Hotel> {
