@@ -1,7 +1,8 @@
-#toggle-button{
+#toggle-button {
     display: none;
 }
-.button-label{
+
+.button-label {
     position: relative;
     display: inline-block;
     width: 68px;
@@ -9,9 +10,10 @@
     border: #ccc;
     border-radius: 30px;
     cursor: pointer;
-    box-shadow:inset 0 0 3px 1px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 0 3px 1px rgba(0, 0, 0, 0.4);
 }
-.circle{
+
+.circle {
     position: absolute;
     top: 0;
     left: 0;
@@ -21,6 +23,7 @@
     background-color: #fff;
     box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.5);
 }
+
 .button-label .text {
     line-height: 20px;
     font-size: 12px;
@@ -32,43 +35,51 @@
     -webkit-user-select: none;
     user-select: none;
 }
+
 .on {
     color: #fff;
     display: none;
     text-indent: 0;
 }
+
 .off {
     color: #fff;
     display: inline-block;
     text-indent: 0;
 }
-.button-label .circle{
+
+.button-label .circle {
     left: 0;
-    transition: all 0.3s;/*transition过度，时间为0.3秒*/
+    transition: all 0.3s;
+    /*transition过度，时间为0.3秒*/
 }
 
 /*
 以下是checked被选中后，紧跟checked标签后面label的样式。
 例如：div+p 选择所有紧接着<div>元素之后的<p>元素
 */
-#toggle-button:checked + label.button-label .circle{
+#toggle-button:checked+label.button-label .circle {
     left: 49px;
 }
-#toggle-button:checked + label.button-label .on{
+
+#toggle-button:checked+label.button-label .on {
     display: inline-block;
 }
-#toggle-button:checked + label.button-label .off{
+
+#toggle-button:checked+label.button-label .off {
     display: none;
 }
-#toggle-button:checked + label.button-label{
+
+#toggle-button:checked+label.button-label {
     background-color: #FF8800;
 }
 
 
-.banner{
+.banner {
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
+    /* 靠右对齐 */
     padding-top: 10px;
 }
 
@@ -77,12 +88,15 @@
     justify-items: left;
 
 }
-.logo img{
+
+.logo img {
     width: 40px;
 }
+
 .logo span {
     width: 80px;
 }
+
 .logo-ch {
     line-height: 26px;
     font-size: 14px;
@@ -90,6 +104,7 @@
     font-weight: bold;
     font-family: "Helvetica Neue", "Arial", "PingFang SC", "Microsoft Yahei", "SimSun", sans-serif;
 }
+
 .logo-en {
     line-height: 14px;
     font-size: 8px;
