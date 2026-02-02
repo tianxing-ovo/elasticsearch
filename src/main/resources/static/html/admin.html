@@ -203,8 +203,8 @@
                             pageSize: this.page.size
                         }
                     }).then(res => {
-                        this.tableData = res.data.records;
-                        this.page.total = res.data.total;
+                        this.tableData = res.data.data.records;
+                        this.page.total = res.data.data.total;
                     }).catch(err => {
                         this.$message.error('获取数据失败');
                         console.error(err);

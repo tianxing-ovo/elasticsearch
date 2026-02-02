@@ -10,13 +10,5 @@ import com.ltx.entity.Hotel;
  */
 public interface AdminHotelService extends IService<Hotel> {
 
-    void addHotel(Hotel hotel);
-
-    void updateHotel(Hotel hotel);
-
-    void deleteHotel(Long id);
-
-    Hotel getHotelById(Long id);
-
     void setHotelAd(Long id, Boolean isAd);
 }

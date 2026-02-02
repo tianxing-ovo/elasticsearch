@@ -2,6 +2,7 @@ package com.ltx.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ltx.entity.Hotel;
+import com.ltx.entity.Result;
 import com.ltx.service.AdminHotelService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -26,32 +27,31 @@ public class AdminHotelController {
      * @return 酒店列表
      */
     @GetMapping("/list")
-    public Page<Hotel> list(@RequestParam(defaultValue = "1") Integer pageNumber,
-                            @RequestParam(defaultValue = "10") Integer pageSize) {
-        return adminHotelService.page(new Page<>(pageNumber, pageSize));
+    public Result<Page<Hotel>> list(@RequestParam(defaultValue = "1") Integer pageNumber,
+                                    @RequestParam(defaultValue = "10") Integer pageSize) {
+        return Result.success(adminHotelService.page(new Page<>(pageNumber, pageSize)));
     }
 
     /**
      * 根据ID查询酒店详情
      *
      * @param id 酒店ID
-     * @return 酒店
+     * @return {@link Result<Hotel>}
      */
     @GetMapping("/{id}")
-    public Hotel getById(@PathVariable Long id) {
-        return adminHotelService.getHotelById(id);
+    public Result<Hotel> getById(@PathVariable Long id) {
+        return Result.success(adminHotelService.getById(id));
     }
 
     /**
      * 新增酒店
      *
      * @param hotel 酒店
-     * @return 操作结果
+     * @return {@link Result<Boolean>}
      */
     @PostMapping
-    public String add(@RequestBody Hotel hotel) {
-        adminHotelService.addHotel(hotel);
-        return "新增成功";
+    public Result<Boolean> save(@RequestBody Hotel hotel) {
+        return Result.success(adminHotelService.save(hotel));
     }
 
     /**
@@ -61,9 +61,8 @@ public class AdminHotelController {
      * @return 操作结果
      */
     @PutMapping
-    public String update(@RequestBody Hotel hotel) {
-        adminHotelService.updateHotel(hotel);
-        return "更新成功";
+    public Result<Boolean> updateById(@RequestBody Hotel hotel) {
+        return Result.success(adminHotelService.updateById(hotel));
     }
 
     /**
@@ -73,9 +72,8 @@ public class AdminHotelController {
      * @return 操作结果
      */
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        adminHotelService.deleteHotel(id);
-        return "删除成功";
+    public Result<Boolean> removeById(@PathVariable Long id) {
+        return Result.success(adminHotelService.removeById(id));
     }
 
     /**
@@ -83,11 +81,11 @@ public class AdminHotelController {
      *
      * @param id   酒店ID
      * @param isAd 是否为广告
-     * @return 操作结果
+     * @return {@link Result<Void>}
      */
     @PutMapping("/{id}/ad")
-    public String setAd(@PathVariable Long id, @RequestParam Boolean isAd) {
+    public Result<Void> setAd(@PathVariable Long id, @RequestParam Boolean isAd) {
         adminHotelService.setHotelAd(id, isAd);
-        return isAd ? "已设为广告" : "已取消广告";
+        return Result.success();
     }
 }
