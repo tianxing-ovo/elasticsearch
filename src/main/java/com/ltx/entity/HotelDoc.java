@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.core.suggest.Completion;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * ES实体类
@@ -70,15 +71,30 @@ public class HotelDoc {
         location = hotel.getLatitude() + ", " + hotel.getLongitude();
         // 从MySQL获取isAd，如果为null则默认false
         isAd = hotel.getIsAd() != null ? hotel.getIsAd() : false;
+        brand = Objects.toString(brand, "").trim();
+        business = Objects.toString(business, "").trim();
         // 品牌和商圈进行自动补全
         if (business.contains("/")) {
             // business有多个值需要切割
             List<String> input = new ArrayList<>();
-            input.add(brand);
-            input.addAll(List.of(business.split("/")));
+            if (!brand.isEmpty()) {
+                input.add(brand);
+            }
+            input.addAll(List.of(business.split("/"))
+                    .stream()
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList());
             suggestion = new Completion(input);
         } else {
-            suggestion = new Completion(new String[] { brand, business });
+            List<String> input = new ArrayList<>();
+            if (!brand.isEmpty()) {
+                input.add(brand);
+            }
+            if (!business.isEmpty()) {
+                input.add(business);
+            }
+            suggestion = new Completion(input);
         }
     }
 }
