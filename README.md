@@ -1,19 +1,19 @@
 # Elasticsearch 酒店搜索系统
 
-基于 Spring Boot 3.4.1 和 Elasticsearch 的酒店搜索系统，提供全文搜索、多条件筛选、地理位置排序等功能，并实现了基于 RabbitMQ 的 MySQL 与 ES 数据异构同步。
+一个基于 Spring Boot + Elasticsearch + RabbitMQ 的分布式酒店搜索与实时数据同步系统
 
 ## 技术栈
 
-| 技术                        | 版本    | 说明               |
-|---------------------------|-------|------------------|
-| Spring Boot               | 3.4.1 | 基础框架             |
-| Spring Data Elasticsearch | 5.4.1 | Elasticsearch 集成 |
-| Elasticsearch             | 9.x   | 搜索引擎             |
-| RabbitMQ                  | 3.x   | 消息队列（数据同步）       |
-| MyBatis-Plus              | 3.5.9 | ORM 框架           |
-| MySQL                     | 8.x   | 关系型数据库           |
-| Java                      | 17+   | JDK 版本           |
-| Lombok                    | -     | 简化代码             |
+|           技术            |  版本   |         说明         |
+|:-------------------------:|:-------:|:--------------------:|
+|        Spring Boot        |  3.4.1  |       基础框架       |
+| Spring Data Elasticsearch |  5.4.1  |  Elasticsearch 集成  |
+|       Elasticsearch       |   8.x   |       搜索引擎       |
+|         RabbitMQ          |   3.x   | 消息队列（数据同步） |
+|       MyBatis-Plus        |  3.5.9  |       ORM 框架       |
+|           MySQL           |   8.x   |     关系型数据库     |
+|           Java            |   17+   |       JDK 版本       |
+|          Lombok           | 1.18.36 |       简化代码       |
 
 ## 项目结构
 
@@ -75,8 +75,8 @@ src/
 - **全文检索**：基于 IK 分词器，支持对酒店名称、商圈、品牌等多字段进行混合搜索
 - **条件筛选**：支持按城市、星级、价格范围、品牌精确筛选
 - **地理位置**：
-  - **附近酒店**：根据用户经纬度计算距离并排序（使用 `geo_distance`）
-  - **距离显示**：实时计算酒店与用户的直线距离
+    - **附近酒店**：根据用户经纬度计算距离并排序（使用 `geo_distance`）
+    - **距离显示**：实时计算酒店与用户的直线距离
 - **智能排序**：支持综合排序（含广告加权）、价格排序、距离排序
 - **自动补全**：输入关键词时提供拼音和汉字的联想建议（使用 `completion` suggester）
 - **广告置顶**：通过 `function_score` 对标记为广告的酒店进行加权算分，使其排名靠前
@@ -112,11 +112,12 @@ src/
 ```
 
 **同步流程**：
-1. 前端调用 API → Service 将数据**写入 MySQL**
+
+1. 前端调用 API → Service 将数据 **写入 MySQL**
 2. 写入成功后，Service **发送 MQ 消息**（仅包含 Hotel ID）
-3. RabbitMQ 将消息路由到对应队列，**Listener 消费消息**
+3. RabbitMQ 将消息路由到对应队列， **Listener 消费消息**
 4. Listener 根据 ID **查询 MySQL 获取最新数据**
-5. Listener 将数据转换为 HotelDoc 并**写入 Elasticsearch**
+5. Listener 将数据转换为 HotelDoc 并 **写入 Elasticsearch**
 
 **RabbitMQ 交换机与队列配置**：
 
@@ -147,13 +148,13 @@ src/
                                     └───────────┘
 ```
 
-| 组件 | 名称 | 说明 |
-|------|------|------|
-| Exchange | `hotel.topic` | Topic 类型交换机，支持通配符路由 |
-| Queue | `hotel.insert.queue` | 监听酒店新增/修改消息 |
-| Queue | `hotel.delete.queue` | 监听酒店删除消息 |
-| RoutingKey | `hotel.insert` | 新增/修改操作的路由键 |
-| RoutingKey | `hotel.delete` | 删除操作的路由键 |
+|    组件    |         名称         |               说明               |
+|:----------:|:--------------------:|:--------------------------------:|
+|  Exchange  |    `hotel.topic`     | Topic 类型交换机，支持通配符路由 |
+|   Queue    | `hotel.insert.queue` |      监听酒店新增/修改消息       |
+|   Queue    | `hotel.delete.queue` |         监听酒店删除消息         |
+| RoutingKey |    `hotel.insert`    |      新增/修改操作的路由键       |
+| RoutingKey |    `hotel.delete`    |         删除操作的路由键         |
 
 ## 快速开始
 
@@ -162,13 +163,13 @@ src/
 - **JDK 17+**
 - **MySQL 8.x**
 - **RabbitMQ 3.x** (默认端口 5672)
-- **Elasticsearch 9.x** (或兼容版本)
-  - 安装插件：`analysis-ik` (IK 中文分词器)
-  - 安装插件：`analysis-pinyin` (拼音分词器)
+- **Elasticsearch 8.x** (或兼容版本)
+    - 安装插件：`analysis-ik` (IK 中文分词器)
+    - 安装插件：`analysis-pinyin` (拼音分词器)
 
 ### 2. 数据库配置
 
-创建数据库 `elasticsearch`，并执行 `sql/tb_hotel.sql` 导入数据表和测试数据。
+执行 `src/main/resources/sql/tb_hotel.sql` 脚本完成数据库初始化与测试数据导入
 
 ### 3. 修改配置
 
@@ -177,17 +178,14 @@ src/
 ```properties
 # 服务端口
 server.port=8089
-
 # MySQL 配置
 spring.datasource.url=jdbc:mysql://localhost:3306/elasticsearch
 spring.datasource.username=root
-spring.datasource.password=your_password
-
+spring.datasource.password=123
 # Elasticsearch 配置
 spring.elasticsearch.uris=http://localhost:9200
 spring.elasticsearch.username=elastic
-spring.elasticsearch.password=your_password
-
+spring.elasticsearch.password=123456
 # RabbitMQ 配置
 spring.rabbitmq.host=localhost
 spring.rabbitmq.port=5672
@@ -202,6 +200,7 @@ mvn spring-boot:run
 ```
 
 访问地址：
+
 - **用户端**：http://localhost:8089 （酒店搜索页面）
 - **管理端**：http://localhost:8089/html/admin.html （后台管理页面）
 
@@ -209,41 +208,41 @@ mvn spring-boot:run
 
 ### 搜索相关 (HotelController)
 
-| 方法   | URL                            | 说明                        |
-|------|--------------------------------|---------------------------|
-| POST | `/hotel/list`                  | 搜索酒店列表（支持分页、筛选、排序）        |
-| POST | `/hotel/filters`               | 获取当前搜索条件下的聚合筛选项（城市/星级/品牌） |
-| GET  | `/hotel/suggestion?prefix=xxx` | 搜索关键词自动补全                 |
+| 方法 |              URL               |                       说明                       |
+|:----:|:------------------------------:|:------------------------------------------------:|
+| POST |         `/hotel/list`          |       搜索酒店列表（支持分页、筛选、排序）       |
+| POST |        `/hotel/filters`        | 获取当前搜索条件下的聚合筛选项（城市/星级/品牌） |
+| GET  | `/hotel/suggestion?prefix=xxx` |                搜索关键词自动补全                |
 
 ### 管理相关 (AdminHotelController)
 
-| 方法     | URL                                   | 说明              |
-|--------|---------------------------------------|-----------------|
-| GET    | `/admin/hotel/list?current=1&size=10` | 分页查询所有酒店（走数据库）  |
-| GET    | `/admin/hotel/{id}`                   | 获取酒店详情          |
-| POST   | `/admin/hotel`                        | 新增酒店（自动同步 ES）   |
-| PUT    | `/admin/hotel`                        | 更新酒店信息（自动同步 ES） |
-| DELETE | `/admin/hotel/{id}`                   | 删除酒店（自动同步 ES）   |
-| PUT    | `/admin/hotel/{id}/ad?isAd=true`      | 设置/取消广告状态       |
+|  方法  |                  URL                  |             说明             |
+|:------:|:-------------------------------------:|:----------------------------:|
+|  GET   | `/admin/hotel/list?current=1&size=10` | 分页查询所有酒店（走数据库） |
+|  GET   |          `/admin/hotel/{id}`          |         获取酒店详情         |
+|  POST  |            `/admin/hotel`             |   新增酒店（自动同步 ES）    |
+|  PUT   |            `/admin/hotel`             | 更新酒店信息（自动同步 ES）  |
+| DELETE |          `/admin/hotel/{id}`          |   删除酒店（自动同步 ES）    |
+|  PUT   |   `/admin/hotel/{id}/ad?isAd=true`    |      设置/取消广告状态       |
 
 ## 索引结构
 
 酒店文档索引 `hotel` 核心字段说明：
 
-| 字段           | 类型              | 说明                                     |
-|--------------|-----------------|----------------------------------------|
-| `id`         | keyword         | 酒店 ID                                  |
-| `name`       | text (ik_smart) | 酒店名称                                   |
-| `location`   | geo_point       | 经纬度坐标                                  |
-| `price`      | integer         | 价格                                     |
-| `score`      | integer         | 评分                                     |
-| `brand`      | keyword         | 品牌                                     |
-| `city`       | keyword         | 城市                                     |
-| `starName`   | keyword         | 星级                                     |
-| `business`   | keyword         | 商圈                                     |
-| `all`        | text            | 组合搜索字段（copy_to: name, brand, business） |
-| `suggestion` | completion      | 自动补全字段                                 |
-| `isAd`       | boolean         | 是否为广告                                  |
+|     字段     |      类型       |                      说明                      |
+|:------------:|:---------------:|:----------------------------------------------:|
+|     `id`     |     keyword     |                    酒店 ID                     |
+|    `name`    | text (ik_smart) |                    酒店名称                    |
+|  `location`  |    geo_point    |                   经纬度坐标                   |
+|   `price`    |     integer     |                      价格                      |
+|   `score`    |     integer     |                      评分                      |
+|   `brand`    |     keyword     |                      品牌                      |
+|    `city`    |     keyword     |                      城市                      |
+|  `starName`  |     keyword     |                      星级                      |
+|  `business`  |     keyword     |                      商圈                      |
+|    `all`     |      text       | 组合搜索字段（copy_to: name, brand, business） |
+| `suggestion` |   completion    |                  自动补全字段                  |
+|    `isAd`    |     boolean     |                   是否为广告                   |
 
 ## 许可证
 
